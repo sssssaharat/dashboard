@@ -8,6 +8,8 @@ function Dashboard() {
   const [totalPnL, setTotalPnL] = useState(0);
   const [accountBalance, setAccountBalance] = useState(0);
   const [totalTrade, setTotalTrade] = useState(0);
+  const [winRate, setWinRate] = useState(0);
+
   const dataFormatter = (number) =>
     `$${Intl.NumberFormat("us").format(number).toString()}`;
 
@@ -35,28 +37,34 @@ function Dashboard() {
   };
 
   const TotalTrade = () => {
-     let count = 0;
-     data.forEach(() => {
-       count++;
-     });
-     return count;
+    let count = 0;
+    data.forEach(() => {
+      count++;
+    });
+    return count;
   };
 
-  const Winrate = () =>{
+  const Winrate = () => {
     let wins = 0;
     let losses = 0;
-     data.forEach((item) => {
-       if (item === "Win") {
-         wins++;
-       } else if (item === "Loss") {
-         losses++;
-       }
-     });
-  }
+
+    data.forEach((result) => {
+      if (result.traderesult === "Win") {
+        wins++;
+      } else if (result.traderesult === "Loss") {
+        losses++;
+      }
+    });
+
+    const rate = (wins / (wins + losses)) * 100;
+
+    return rate.toFixed(2);
+  };
   useEffect(() => {
     TotalPnL();
     setAccountBalance(AccountBalance());
     setTotalTrade(TotalTrade());
+    setWinRate(Winrate());
   }, [data]);
 
   return (
@@ -115,7 +123,7 @@ function Dashboard() {
                   <h4 className="text-white/70 text-sm">Win Rate</h4>
                 </div>
                 <p className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
-                  57.6
+                  {winRate} %
                 </p>
               </div>
               <div className="max-w-full p-6 rounded-xl ring-1 ring-zinc-800">
