@@ -7,7 +7,7 @@ function Dashboard() {
   const { data, error, isLoading } = useGetShowDataQuery();
   const [totalPnL, setTotalPnL] = useState(0);
   const [accountBalance, setAccountBalance] = useState(0);
-  
+  const [totalTrade, setTotalTrade] = useState(0);
   const dataFormatter = (number) =>
     `$${Intl.NumberFormat("us").format(number).toString()}`;
 
@@ -34,9 +34,29 @@ function Dashboard() {
     return number;
   };
 
+  const TotalTrade = () => {
+     let count = 0;
+     data.forEach(() => {
+       count++;
+     });
+     return count;
+  };
+
+  const Winrate = () =>{
+    let wins = 0;
+    let losses = 0;
+     data.forEach((item) => {
+       if (item === "Win") {
+         wins++;
+       } else if (item === "Loss") {
+         losses++;
+       }
+     });
+  }
   useEffect(() => {
     TotalPnL();
     setAccountBalance(AccountBalance());
+    setTotalTrade(TotalTrade());
   }, [data]);
 
   return (
@@ -103,7 +123,7 @@ function Dashboard() {
                   <h4 className="text-white/70 text-sm">Total Trades</h4>
                 </div>
                 <p className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
-                  92
+                  {totalTrade}
                 </p>
               </div>
             </div>
