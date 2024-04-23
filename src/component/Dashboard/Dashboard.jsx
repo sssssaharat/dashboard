@@ -5,11 +5,12 @@ import { useGetShowDataQuery } from "../../services/dataTrade";
 import { useState, useEffect } from "react";
 function Dashboard() {
   const { data, error, isLoading } = useGetShowDataQuery();
-
+  const [totalPnL, setTotalPnL] = useState(0);
+  const [accountBalance, setAccountBalance] = useState(0);
+  
   const dataFormatter = (number) =>
     `$${Intl.NumberFormat("us").format(number).toString()}`;
 
-  const [totalPnL, setTotalPnL] = useState(0);
   const TotalPnL = () => {
     let sum = 0;
     data.forEach((item) => {
@@ -17,8 +18,25 @@ function Dashboard() {
     });
     setTotalPnL(Number(sum.toFixed(2)));
   };
+
+  const AccountBalance = () => {
+    let number = 0;
+    data.forEach((item) => {
+      const parsedNumber = parseFloat(
+        item.totalbalance.replace("$", "").replace(",", "")
+      );
+      if (!isNaN(parsedNumber)) {
+        number = parsedNumber;
+        console.log(number);
+        return;
+      }
+    });
+    return number;
+  };
+
   useEffect(() => {
     TotalPnL();
+    setAccountBalance(AccountBalance());
   }, [data]);
 
   return (
@@ -69,7 +87,7 @@ function Dashboard() {
                   </BadgeDelta>
                 </div>
                 <p className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
-                  65,300
+                  {accountBalance}
                 </p>
               </div>
               <div className="max-w-full p-6 rounded-xl ring-1 ring-zinc-800">
