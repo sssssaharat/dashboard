@@ -11,6 +11,8 @@ function Dashboard() {
   const [winRate, setWinRate] = useState(0);
   // const [integers, setIntegers] = useState();
   const [trades, setTrades] = useState(mockUp);
+  const [rrValues, setRRValues] = useState([]);
+   const [maxRR, setMaxRR] = useState(null);
 
   const dataFormatter = (number) =>
     `$${Intl.NumberFormat("us").format(number).toString()}`;
@@ -69,12 +71,55 @@ function Dashboard() {
     });
     setTrades(updatedTrades); // อัพเดต state ด้วยข้อมูลใหม่
   };
+  const calculateRRForEach = (data) => {
+    const rrValues = [];
+
+    data.forEach((item) => {
+      const takeProfit = parseFloat(item.takeprofit.replace(/[^\d.-]/g, ""));
+      const stopLoss = parseFloat(item.stoploss.replace(/[^\d.-]/g, ""));
+      const entry = parseFloat(item.entry.replace(/[^\d.-]/g, ""));
+
+      if (
+        !isNaN(takeProfit) &&
+        !isNaN(stopLoss) &&
+        stopLoss !== 0 &&
+        entry !== 0
+      ) {
+        rrValues.push(Math.abs(takeProfit - entry) / Math.abs(stopLoss - entry));
+      }
+    });
+
+    return rrValues;
+  };
+  const calculateAverageRR = (rrValues) => {
+    const filteredRRValues = rrValues.filter((value) => value !== null);
+    if (filteredRRValues.length > 0) {
+      const sum = filteredRRValues.reduce((acc, curr) => acc + curr, 0);
+      return Math.abs(sum / filteredRRValues.length).toFixed(2);
+    } else {
+      return null;
+    }
+  };
+  const averageRR = calculateAverageRR(rrValues);
+
+  const calculateMaxRRValue = (data) => {
+    const rrValues = calculateRRForEach(data);
+    if (rrValues.length > 0) {
+      return Math.max(...rrValues).toFixed(2);
+    }
+    return null;
+  };
   useEffect(() => {
     TotalPnL();
     setAccountBalance(AccountBalance());
     setTotalTrade(TotalTrade());
     setWinRate(Winrate());
     convertProfitLossToInt();
+    const calculatedRRValues = calculateRRForEach(data);
+    setRRValues(calculatedRRValues);
+    const maxRRValue = calculateMaxRRValue(data);
+    setMaxRR(maxRRValue);
+    
   }, [data]);
 
   return (
@@ -164,7 +209,7 @@ function Dashboard() {
                   </h4>
                 </div>
                 <p className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
-                  3.2
+                  {averageRR}
                 </p>
                 <SparkAreaChart
                   data={chartdata}
@@ -181,7 +226,7 @@ function Dashboard() {
                   </h4>
                 </div>
                 <p className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
-                  5
+                  {maxRR}
                 </p>
                 <SparkAreaChart
                   data={chartdata}
