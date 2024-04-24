@@ -11,7 +11,7 @@ function Analytics() {
   const [averageWinDuration, setAverageWinDuration] =
     useState("0 hours 0 minutes");
   const [winningRate, setWinningRate] = useState(0);
-
+  const [lossCount, setLossCount] = useState(0);
   //Average
   const CalRR = (data) => {
     const rr = [];
@@ -55,7 +55,7 @@ function Analytics() {
     }, 0);
     const hours = Math.floor(totalMinutes / numbers.length / 60).toFixed(0);
     const minutes = ((totalMinutes / numbers.length) % 60).toFixed(0);
-    return `${hours} hours ${minutes} minutes`;
+    return `${hours} h ${minutes} m`;
   };
   //Total Trades
   const TotalTrade = () => {
@@ -85,7 +85,7 @@ function Analytics() {
       const averageDurationInMinutes = totalDuration / durations.length;
       const hours = Math.floor(averageDurationInMinutes / 60);
       const minutes = Math.round(averageDurationInMinutes % 60);
-      setAverageWinDuration(`${hours}  hours  ${minutes} minutes`);
+      setAverageWinDuration(`${hours}  h  ${minutes} m`);
     } else {
       setAverageWinDuration(0);
     }
@@ -93,14 +93,22 @@ function Analytics() {
   ///Average Win
   const calculateWinningRate = () => {
     // หาจำนวนครั้งที่มีการชนะ
-    const winCount = data.filter(
-      (trade) => trade.traderesult === "Win"
-    ).length;
+    const winCount = data.filter((trade) => trade.traderesult === "Win").length;
     // หาจำนวนรวมของการเทรดทั้งหมด
     const totalTrades = data.length;
     // คำนวณค่าเฉลี่ยของการชนะในรูปแบบเปอร์เซ็นต์
     const rate = (winCount / totalTrades) * 100;
     return rate.toFixed(2);
+  };
+  ///TotalLoss
+  const totalLossCount = () => {
+    let count = 0;
+    data.map((result) => {
+      if (result.traderesult === "Loss") {
+        count++;
+      }
+    });
+    setLossCount(count);
   };
 
   useEffect(() => {
@@ -118,6 +126,8 @@ function Analytics() {
     ////////Average Win
     const rate = calculateWinningRate(data);
     setWinningRate(rate);
+    ////////totalLossCoun
+    totalLossCount(data);
   }, [data]);
   return (
     <div>
@@ -170,7 +180,7 @@ function Analytics() {
                   <div className="text-white/70 mt-3 ">
                     <ListItem>
                       <span>Total Losers </span>
-                      <span>70</span>
+                      <span>{lossCount}</span>
                     </ListItem>
                     <ListItem>
                       <span>Average Duration</span>
