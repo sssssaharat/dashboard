@@ -7,6 +7,7 @@ function Analytics() {
   const [averageTradeDuration, setAverageTradeDuration] =
     useState("0 hours 0 minutes");
   const [totalTrade, setTotalTrade] = useState(0);
+  const [winsCount, setWinsCount] = useState(0);
 
   //Average
   const CalRR = (data) => {
@@ -61,6 +62,20 @@ function Analytics() {
     });
     return count;
   };
+  //TotalWinners
+  //  const convertedResults = data.traderesult.map((result) =>
+  //    result === "Win" ? 1 : 0
+  //  );
+
+   const updateWinsCount = () => {
+     let count = 0;
+     data.map((result) => {
+       if (result.traderesult === "Win") {
+         count++;
+       }
+     });
+     setWinsCount(count);
+   };
   useEffect(() => {
     const calculatedRRValues = CalRR(data);
     setRR(calculatedRRValues);
@@ -69,6 +84,8 @@ function Analytics() {
     setAverageTradeDuration(averageDuration);
     ////////TotalTrade
     setTotalTrade(TotalTrade());
+    ////////TotalWinners
+      updateWinsCount(data);
   }, [data]);
   return (
     <div>
@@ -104,7 +121,7 @@ function Analytics() {
                   <div className="text-white/70 mt-3 ">
                     <ListItem>
                       <span>Total Winners </span>
-                      <span>3.2</span>
+                      <span>{winsCount}</span>
                     </ListItem>
                     <ListItem>
                       <span>Average Duration</span>
