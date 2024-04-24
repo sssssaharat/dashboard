@@ -10,7 +10,7 @@ function Analytics() {
   const [winsCount, setWinsCount] = useState(0);
   const [averageWinDuration, setAverageWinDuration] =
     useState("0 hours 0 minutes");
-
+  const [winningRate, setWinningRate] = useState(0);
 
   //Average
   const CalRR = (data) => {
@@ -75,22 +75,33 @@ function Analytics() {
     });
     setWinsCount(count);
   };
-  //averageWinDuration
-    const calculateAverageWinDuration = () => {
-      const winTrades = data.filter((trade) => trade.traderesult === "Win");
-      const durations = winTrades.map((trade) => parseInt(trade.tradeduration));
+  //AverageWinDuration
+  const calculateAverageWinDuration = () => {
+    const winTrades = data.filter((trade) => trade.traderesult === "Win");
+    const durations = winTrades.map((trade) => parseInt(trade.tradeduration));
 
-      if (durations.length > 0) {
-        const totalDuration = durations.reduce((acc, cur) => acc + cur, 0);
-        const averageDurationInMinutes = totalDuration / durations.length;
-        const hours = Math.floor(averageDurationInMinutes / 60);
-        const minutes = Math.round(averageDurationInMinutes % 60);
-        setAverageWinDuration(`${hours}  hours  ${minutes} minutes`);
-      } else {
-        setAverageWinDuration(0);
-      }
-    };
-    
+    if (durations.length > 0) {
+      const totalDuration = durations.reduce((acc, cur) => acc + cur, 0);
+      const averageDurationInMinutes = totalDuration / durations.length;
+      const hours = Math.floor(averageDurationInMinutes / 60);
+      const minutes = Math.round(averageDurationInMinutes % 60);
+      setAverageWinDuration(`${hours}  hours  ${minutes} minutes`);
+    } else {
+      setAverageWinDuration(0);
+    }
+  };
+  ///Average Win
+  const calculateWinningRate = () => {
+    // หาจำนวนครั้งที่มีการชนะ
+    const winCount = data.filter(
+      (trade) => trade.traderesult === "Win"
+    ).length;
+    // หาจำนวนรวมของการเทรดทั้งหมด
+    const totalTrades = data.length;
+    // คำนวณค่าเฉลี่ยของการชนะในรูปแบบเปอร์เซ็นต์
+    const rate = (winCount / totalTrades) * 100;
+    return rate.toFixed(2);
+  };
 
   useEffect(() => {
     const calculatedRRValues = CalRR(data);
@@ -104,6 +115,9 @@ function Analytics() {
     updateWinsCount(data);
     ////////AverageWinDuration
     calculateAverageWinDuration(data);
+    ////////Average Win
+    const rate = calculateWinningRate(data);
+    setWinningRate(rate);
   }, [data]);
   return (
     <div>
@@ -147,7 +161,7 @@ function Analytics() {
                     </ListItem>
                     <ListItem>
                       <span>Average Win</span>
-                      <span>0.88%</span>
+                      <span>{winningRate} %</span>
                     </ListItem>
                   </div>
                 </div>
