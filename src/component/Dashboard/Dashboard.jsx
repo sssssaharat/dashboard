@@ -13,6 +13,7 @@ function Dashboard() {
   const [rrValues, setRRValues] = useState([]);
   const [maxRR, setMaxRR] = useState(null);
   const [minRR, setMinRR] = useState(null);
+  const [breakEven, setBreakEven] = useState(0);
 
   const dataFormatter = (number) =>
     `$${Intl.NumberFormat("us").format(number).toString()}`;
@@ -118,6 +119,15 @@ function Dashboard() {
     }
     return null;
   };
+
+  const breakEvenTrade = () => {
+    let sum = 0;
+    data.forEach((item) => {
+      sum += parseFloat(item.breakeven.replace("$", "").replace(",", ""));
+    });
+    setTotalPnL(Number(sum.toFixed(2)));
+  };
+
   useEffect(() => {
     TotalPnL();
     setAccountBalance(AccountBalance());
@@ -130,6 +140,7 @@ function Dashboard() {
     setMaxRR(maxRRValue);
     const minRRValue = calculateMinRRValue(data);
     setMinRR(minRRValue);
+    breakEvenTrade();
   }, [data]);
 
   return (
@@ -272,7 +283,7 @@ function Dashboard() {
                   </h4>
                 </div>
                 <p className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
-                  7
+                  {breakEven}
                 </p>
                 <SparkAreaChart
                   data={chartdata}
