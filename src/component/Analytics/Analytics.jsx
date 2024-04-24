@@ -8,6 +8,9 @@ function Analytics() {
     useState("0 hours 0 minutes");
   const [totalTrade, setTotalTrade] = useState(0);
   const [winsCount, setWinsCount] = useState(0);
+  const [averageWinDuration, setAverageWinDuration] =
+    useState("0 hours 0 minutes");
+
 
   //Average
   const CalRR = (data) => {
@@ -63,19 +66,32 @@ function Analytics() {
     return count;
   };
   //TotalWinners
-  //  const convertedResults = data.traderesult.map((result) =>
-  //    result === "Win" ? 1 : 0
-  //  );
+  const updateWinsCount = () => {
+    let count = 0;
+    data.map((result) => {
+      if (result.traderesult === "Win") {
+        count++;
+      }
+    });
+    setWinsCount(count);
+  };
+  //averageWinDuration
+    const calculateAverageWinDuration = () => {
+      const winTrades = data.filter((trade) => trade.traderesult === "Win");
+      const durations = winTrades.map((trade) => parseInt(trade.tradeduration));
 
-   const updateWinsCount = () => {
-     let count = 0;
-     data.map((result) => {
-       if (result.traderesult === "Win") {
-         count++;
-       }
-     });
-     setWinsCount(count);
-   };
+      if (durations.length > 0) {
+        const totalDuration = durations.reduce((acc, cur) => acc + cur, 0);
+        const averageDurationInMinutes = totalDuration / durations.length;
+        const hours = Math.floor(averageDurationInMinutes / 60);
+        const minutes = Math.round(averageDurationInMinutes % 60);
+        setAverageWinDuration(`${hours}  hours  ${minutes} minutes`);
+      } else {
+        setAverageWinDuration(0);
+      }
+    };
+    
+
   useEffect(() => {
     const calculatedRRValues = CalRR(data);
     setRR(calculatedRRValues);
@@ -85,7 +101,9 @@ function Analytics() {
     ////////TotalTrade
     setTotalTrade(TotalTrade());
     ////////TotalWinners
-      updateWinsCount(data);
+    updateWinsCount(data);
+    ////////AverageWinDuration
+    calculateAverageWinDuration(data);
   }, [data]);
   return (
     <div>
@@ -125,7 +143,7 @@ function Analytics() {
                     </ListItem>
                     <ListItem>
                       <span>Average Duration</span>
-                      <span>8h 5m</span>
+                      <span>{averageWinDuration}</span>
                     </ListItem>
                     <ListItem>
                       <span>Average Win</span>
