@@ -14,9 +14,12 @@ export const dataApi = createApi({
     getShowData: builder.query({
       query: () => `v1/0kgbojlcp09qn`,
     }),
+    getTableData: builder.query({
+      query: () => `v1/0kgbojlcp09qn`,
+    }),
   }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useGetAllDataQuery, useGetShowDataQuery } = dataApi;
+export const { useGetAllDataQuery, useGetShowDataQuery,useGetTableDataQuery } = dataApi;

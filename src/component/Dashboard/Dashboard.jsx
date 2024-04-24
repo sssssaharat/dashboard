@@ -1,6 +1,6 @@
 import { BadgeDelta, SparkAreaChart, AreaChart } from "@tremor/react";
 import Anlytics from "../Analytics/Analytics";
-import { chartdata, mockUp } from "../Data/chartdata";
+import { chartdata } from "../Data/chartdata";
 import { useGetShowDataQuery } from "../../services/dataTrade";
 import { useState, useEffect } from "react";
 function Dashboard() {
@@ -9,11 +9,13 @@ function Dashboard() {
   const [accountBalance, setAccountBalance] = useState(0);
   const [totalTrade, setTotalTrade] = useState(0);
   const [winRate, setWinRate] = useState(0);
-  const [trades, setTrades] = useState(mockUp);
+  // const [trades, setTrades] = useState(mockUp);
   const [rrValues, setRRValues] = useState([]);
   const [maxRR, setMaxRR] = useState(null);
   const [minRR, setMinRR] = useState(null);
   const [breakEven, setBreakEven] = useState(0);
+  // const [be, setBE] = useState(mockUp);
+  const [intValues, setIntValues] = useState([]);
 
   const dataFormatter = (number) =>
     `$${Intl.NumberFormat("us").format(number).toString()}`;
@@ -65,13 +67,24 @@ function Dashboard() {
 
     return rate.toFixed(2);
   };
-  const convertProfitLossToInt = () => {
-    const updatedTrades = [...trades]; // สร้างคัดลอกของ trades เพื่อป้องกันการเปลี่ยนแปลงตรงกับ state ต้นฉบับ
-    updatedTrades.forEach((trade) => {
-      trade.profitloss = parseFloat(trade.profitloss.replace("$", "")); // แปลง String เป็น Float และตัดเครื่องหมาย $ ออก
+  const convertStringToIntegers = (data) => {
+    const integers = [];
+    data.forEach((str) => {
+      const intValue = Math.round(parseFloat(str.profitloss.replace("$", "").replace(",", "")));
+      integers.push(intValue);
+      console.log(integers)
     });
-    setTrades(updatedTrades); // อัพเดต state ด้วยข้อมูลใหม่
+    
+    return integers;
   };
+  // const convertProfitLossToInt = () => {
+  //   const updatedTrades = [...trades];
+  //   updatedTrades.forEach((trade) => {
+  //     trade.profitloss = parseFloat(trade.profitloss.replace("$", ""));
+  //     console.log(mockUp)
+  //   });
+  //   setTrades(data);
+  // };
   const calculateRRForEach = (data) => {
     const rrValues = [];
 
@@ -125,22 +138,33 @@ function Dashboard() {
     data.forEach((item) => {
       sum += parseFloat(item.breakeven.replace("$", "").replace(",", ""));
     });
-    setTotalPnL(Number(sum.toFixed(2)));
+    setBreakEven(Number(sum.toFixed(2)));
   };
+  // const convertBreakEvenToInt = () => {
+  //   const updatedTrades = [...be]; // สร้างคัดลอกของ trades เพื่อป้องกันการเปลี่ยนแปลงตรงกับ state ต้นฉบับ
+  //   updatedTrades.forEach((trade) => {
+  //     trade.breakeven = parseFloat(trade.breakeven.replace("$", "")); // แปลง String เป็น Float และตัดเครื่องหมาย $ ออก
+  //   });
+  //   setBE(updatedTrades); // อัพเดต state ด้วยข้อมูลใหม่
+  // };
 
   useEffect(() => {
     TotalPnL();
     setAccountBalance(AccountBalance());
     setTotalTrade(TotalTrade());
     setWinRate(Winrate());
-    convertProfitLossToInt();
+    // convertProfitLossToInt();
+    const integers = convertStringToIntegers(data);
+    setIntValues(integers);
     const calculatedRRValues = calculateRRForEach(data);
     setRRValues(calculatedRRValues);
     const maxRRValue = calculateMaxRRValue(data);
     setMaxRR(maxRRValue);
     const minRRValue = calculateMinRRValue(data);
     setMinRR(minRRValue);
+
     breakEvenTrade();
+    // convertBreakEvenToInt();
   }, [data]);
 
   return (
@@ -214,11 +238,11 @@ function Dashboard() {
             <div>
               <AreaChart
                 className="py-6 "
-                data={trades}
+                data={intValues}
                 index="date"
                 categories={["profitloss"]}
                 colors={["indigo"]}
-                valueFormatter={dataFormatter}
+                datatype="dataFormatter"
                 yAxisWidth={60}
               />
             </div>
@@ -273,6 +297,7 @@ function Dashboard() {
                   categories={["The Pragmatic Engineer"]}
                   index={"date"}
                   colors={["emerald"]}
+                  valueFormatter={dataFormatter}
                   className="mt-6 w-full"
                 />
               </div>
@@ -285,13 +310,14 @@ function Dashboard() {
                 <p className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
                   {breakEven}
                 </p>
-                <SparkAreaChart
-                  data={chartdata}
-                  categories={["SemiAnalysis"]}
+                {/* <SparkAreaChart
+                  data={be}
+                  categories={["breakeven"]}
                   index={"date"}
-                  colors={["red"]}
+                  colors={["gray"]}
                   className="mt-6 w-full"
-                />
+                  valueFormatter={dataFormatter}
+                /> */}
               </div>
             </div>
           </div>
