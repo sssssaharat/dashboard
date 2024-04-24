@@ -1,6 +1,6 @@
 import { BadgeDelta, SparkAreaChart, AreaChart } from "@tremor/react";
 import Anlytics from "../Analytics/Analytics";
-import { chartdata } from "../Data/chartdata";
+import { chartdata, mockUp } from "../Data/chartdata";
 import { useGetShowDataQuery } from "../../services/dataTrade";
 import { useState, useEffect } from "react";
 function Dashboard() {
@@ -9,6 +9,8 @@ function Dashboard() {
   const [accountBalance, setAccountBalance] = useState(0);
   const [totalTrade, setTotalTrade] = useState(0);
   const [winRate, setWinRate] = useState(0);
+  // const [integers, setIntegers] = useState();
+  const [trades, setTrades] = useState(mockUp);
 
   const dataFormatter = (number) =>
     `$${Intl.NumberFormat("us").format(number).toString()}`;
@@ -29,7 +31,7 @@ function Dashboard() {
       );
       if (!isNaN(parsedNumber)) {
         number = parsedNumber;
-        console.log(number);
+
         return;
       }
     });
@@ -60,11 +62,19 @@ function Dashboard() {
 
     return rate.toFixed(2);
   };
+  const convertProfitLossToInt = () => {
+    const updatedTrades = [...trades]; // สร้างคัดลอกของ trades เพื่อป้องกันการเปลี่ยนแปลงตรงกับ state ต้นฉบับ
+    updatedTrades.forEach((trade) => {
+      trade.profitloss = parseFloat(trade.profitloss.replace("$", "")); // แปลง String เป็น Float และตัดเครื่องหมาย $ ออก
+    });
+    setTrades(updatedTrades); // อัพเดต state ด้วยข้อมูลใหม่
+  };
   useEffect(() => {
     TotalPnL();
     setAccountBalance(AccountBalance());
     setTotalTrade(TotalTrade());
     setWinRate(Winrate());
+    convertProfitLossToInt();
   }, [data]);
 
   return (
@@ -99,7 +109,7 @@ function Dashboard() {
                 </div>
 
                 <p className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
-                  {totalPnL}
+                  {totalPnL} $
                 </p>
               </div>
 
@@ -115,7 +125,7 @@ function Dashboard() {
                   </BadgeDelta>
                 </div>
                 <p className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
-                  {accountBalance}
+                  {accountBalance} $
                 </p>
               </div>
               <div className="max-w-full p-6 rounded-xl ring-1 ring-zinc-800">
@@ -138,13 +148,12 @@ function Dashboard() {
             <div>
               <AreaChart
                 className="py-6 "
-                data={chartdata}
+                data={trades}
                 index="date"
-                categories={["SemiAnalysis", "The Pragmatic Engineer"]}
-                colors={["indigo", "rose"]}
+                categories={["profitloss"]}
+                colors={["indigo"]}
                 valueFormatter={dataFormatter}
                 yAxisWidth={60}
-                onValueChange={(v) => console.log(v)}
               />
             </div>
             <div className="grid mx-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 py-6">
