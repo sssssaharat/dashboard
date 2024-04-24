@@ -9,10 +9,10 @@ function Dashboard() {
   const [accountBalance, setAccountBalance] = useState(0);
   const [totalTrade, setTotalTrade] = useState(0);
   const [winRate, setWinRate] = useState(0);
-  // const [integers, setIntegers] = useState();
   const [trades, setTrades] = useState(mockUp);
   const [rrValues, setRRValues] = useState([]);
-   const [maxRR, setMaxRR] = useState(null);
+  const [maxRR, setMaxRR] = useState(null);
+  const [minRR, setMinRR] = useState(null);
 
   const dataFormatter = (number) =>
     `$${Intl.NumberFormat("us").format(number).toString()}`;
@@ -85,7 +85,9 @@ function Dashboard() {
         stopLoss !== 0 &&
         entry !== 0
       ) {
-        rrValues.push(Math.abs(takeProfit - entry) / Math.abs(stopLoss - entry));
+        rrValues.push(
+          Math.abs(takeProfit - entry) / Math.abs(stopLoss - entry)
+        );
       }
     });
 
@@ -109,6 +111,13 @@ function Dashboard() {
     }
     return null;
   };
+  const calculateMinRRValue = (data) => {
+    const rrValues = calculateRRForEach(data);
+    if (rrValues.length > 0) {
+      return Math.min(...rrValues).toFixed(2);
+    }
+    return null;
+  };
   useEffect(() => {
     TotalPnL();
     setAccountBalance(AccountBalance());
@@ -119,7 +128,8 @@ function Dashboard() {
     setRRValues(calculatedRRValues);
     const maxRRValue = calculateMaxRRValue(data);
     setMaxRR(maxRRValue);
-    
+    const minRRValue = calculateMinRRValue(data);
+    setMinRR(minRRValue);
   }, [data]);
 
   return (
@@ -228,6 +238,25 @@ function Dashboard() {
                 <p className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
                   {maxRR}
                 </p>
+
+                <SparkAreaChart
+                  data={chartdata}
+                  categories={["The Pragmatic Engineer"]}
+                  index={"date"}
+                  colors={["emerald"]}
+                  className="mt-6 w-full"
+                />
+              </div>
+              <div>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
+                    Min RR
+                  </h4>
+                </div>
+                <p className="text-tremor-metric text-tremor-content-strong dark:text-dark-tremor-content-strong font-semibold">
+                  {minRR}
+                </p>
+
                 <SparkAreaChart
                   data={chartdata}
                   categories={["The Pragmatic Engineer"]}
