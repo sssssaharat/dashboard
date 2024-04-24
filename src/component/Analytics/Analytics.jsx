@@ -6,6 +6,7 @@ function Analytics() {
   const [rr, setRR] = useState([]);
   const [averageTradeDuration, setAverageTradeDuration] =
     useState("0 hours 0 minutes");
+  const [totalTrade, setTotalTrade] = useState(0);
 
   //Average
   const CalRR = (data) => {
@@ -52,14 +53,22 @@ function Analytics() {
     const minutes = ((totalMinutes / numbers.length) % 60).toFixed(0);
     return `${hours} hours ${minutes} minutes`;
   };
-
   //Total Trades
+  const TotalTrade = () => {
+    let count = 0;
+    data.forEach(() => {
+      count++;
+    });
+    return count;
+  };
   useEffect(() => {
     const calculatedRRValues = CalRR(data);
     setRR(calculatedRRValues);
     ////////averageDuration
     const averageDuration = calculateAverage(data);
     setAverageTradeDuration(averageDuration);
+    ////////TotalTrade
+    setTotalTrade(TotalTrade());
   }, [data]);
   return (
     <div>
@@ -86,7 +95,7 @@ function Analytics() {
                     </ListItem>
                     <ListItem>
                       <span>Total Trades</span>
-                      <span>92</span>
+                      <span>{totalTrade}</span>
                     </ListItem>
                   </div>
                 </div>
