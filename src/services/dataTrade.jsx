@@ -9,13 +9,13 @@ export const dataApi = createApi({
   }),
   endpoints: (builder) => ({
     getAllData: builder.query({
-      query: () => `v1/0kgbojlcp09qn`,
+      query: () => `v1/64j8hcc8hk4vw`,
     }),
     getShowData: builder.query({
-      query: () => `v1/0kgbojlcp09qn`,
+      query: () => `v1/64j8hcc8hk4vw`,
     }),
     getTableData: builder.query({
-      query: () => `v1/0kgbojlcp09qn`,
+      query: () => `v1/64j8hcc8hk4vw`,
     }),
   }),
 });

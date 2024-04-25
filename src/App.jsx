@@ -1,5 +1,5 @@
 // import Dashboard from "./component/Dashboard/Dashboard";
-import Journal from "./component/Journal/Journal";
+import Dashboard from "./component/Dashboard/Dashboard";
 import { useGetAllDataQuery } from "./services/dataTrade";
 
 function App() {
@@ -12,7 +12,7 @@ function App() {
       ) : isLoading ? (
         <div className="text-white">Loading...</div>
       ) : data ? (
-        <Journal />
+        <Dashboard />
       ) : null}
     </div>
   );

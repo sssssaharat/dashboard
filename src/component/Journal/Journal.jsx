@@ -7,7 +7,6 @@ import {
   TableRow,
 } from "@tremor/react";
 import { useGetShowDataQuery } from "../../services/dataTrade";
-import Dashboard from "../Dashboard/Dashboard";
 function Journal() {
   const { data, error, isLoading } = useGetShowDataQuery();
   return (
@@ -15,7 +14,7 @@ function Journal() {
       {error ? (
         <>Oh no, there was an error</>
       ) : isLoading ? (
-        <>Loading...</>
+        <div className="text-white">Loading...</div>
       ) : data ? (
         <div className="mx-auto max-w-7xl py-12">
           <div className="mx-6 rounded-xl ring-1 ring-zinc-700 p-6">
@@ -65,7 +64,6 @@ function Journal() {
               </TableBody>
             </Table>
           </div>
-          <Dashboard />
         </div>
       ) : null}
     </div>
