@@ -261,7 +261,7 @@ function Analytics() {
                       <span>{averageLossDuration}</span>
                     </ListItem>
                     <ListItem>
-                      <span>Average Win</span>
+                      <span>Average Loss</span>
                       <span>{lossingRate}%</span>
                     </ListItem>
                   </div>
